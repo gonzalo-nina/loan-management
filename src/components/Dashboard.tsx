@@ -147,7 +147,7 @@ export const Dashboard: React.FC = () => {
         event.target.value = '';
     };
 
-    const handleDownload = () => {
+    const handleDownload = async () => {
         const dataToExport = loans.map(loan => ({
             ...loan,
             paidInstallments: loan.installmentsData 
@@ -156,16 +156,38 @@ export const Dashboard: React.FC = () => {
                     .filter(num => num !== null)
                 : []
         }));
-
-        const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `loans_backup_${new Date().toISOString().split('T')[0]}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+    
+        try {
+            // Configure save dialog
+            const opts = {
+                suggestedName: 'prestamoData.json',
+                types: [{
+                    description: 'JSON File',
+                    accept: { 'application/json': ['.json'] }
+                }],
+            };
+    
+            // Get file handle
+            const handle = await (window as any).showSaveFilePicker(opts);
+            
+            // Create writable stream
+            const writable = await handle.createWritable();
+            
+            // Write the file
+            await writable.write(JSON.stringify(dataToExport, null, 2));
+            await writable.close();
+        } catch (err) {
+            // Fallback for browsers that don't support FileSystem API
+            const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'prestamoData.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
     };
 
     const generateRandomCode = () => {
