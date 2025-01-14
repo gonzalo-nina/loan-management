@@ -5,6 +5,7 @@ import { AddLoanModal } from './AddLoanCard';
 import { v4 as uuidv4 } from 'uuid';
 import { Loan } from '../types/types';
 import { saveLoans, loadLoans } from '../utils/storage';
+import { InstallmentData } from '../types/types'; // Add this line to import InstallmentData
 
 const Container = styled.div`
   padding: 20px;
@@ -106,6 +107,16 @@ export const Dashboard: React.FC = () => {
 
     const handleDeleteLoan = (id: string) => {
         const updatedLoans = loans.filter(loan => loan.id !== id);
+        setLoans(updatedLoans);
+        saveLoans(updatedLoans);
+    };
+
+    const handleInstallmentUpdate = (loanId: string, installmentsData: InstallmentData[]) => {
+        const updatedLoans = loans.map(loan => 
+          loan.id === loanId 
+            ? { ...loan, installmentsData } 
+            : loan
+        );
         setLoans(updatedLoans);
         saveLoans(updatedLoans);
     };

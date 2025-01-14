@@ -1,3 +1,4 @@
+// src/types/types.ts
 export interface Loan {
   id: string;
   name: string;
@@ -6,4 +7,12 @@ export interface Loan {
   installmentAmount: number;
   startDate: string;
   description?: string;
+  installmentsData?: InstallmentData[];
+}
+
+export interface InstallmentData {
+  number: number;
+  dueDate: string;
+  amount: number;
+  isPaid: boolean;
 }
