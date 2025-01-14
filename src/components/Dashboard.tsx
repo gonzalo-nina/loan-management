@@ -37,6 +37,8 @@ const Button = styled.button`
 export const Dashboard: React.FC = () => {
     const [loans, setLoans] = useState<Loan[]>([]);
     const [showModal, setShowModal] = useState(false);
+    const [loanToEdit, setLoanToEdit] = useState<Loan | null>(null);
+
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
@@ -91,9 +93,15 @@ export const Dashboard: React.FC = () => {
         saveLoans(updatedLoans);
     };
 
+    const handleUpdateLoan = (updatedLoan: Loan) => {
+        const newLoans = loans.map(l => l.id === updatedLoan.id ? updatedLoan : l);
+        setLoans(newLoans);
+        saveLoans(newLoans);
+    };
+
     const handleEditLoan = (loan: Loan) => {
+        setLoanToEdit(loan);
         setShowModal(true);
-        // TODO: Implement edit functionality
     };
 
     const handleDeleteLoan = (id: string) => {
@@ -139,7 +147,12 @@ export const Dashboard: React.FC = () => {
             {showModal && (
                 <AddLoanModal
                     onAdd={handleAddLoan}
-                    onClose={() => setShowModal(false)}
+                    onUpdate={handleUpdateLoan}
+                    editingLoan={loanToEdit}
+                    onClose={() => {
+                        setShowModal(false);
+                        setLoanToEdit(null);
+                    }}
                 />
             )}
         </Container>

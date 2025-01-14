@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Loan } from '../types/types';
 
@@ -79,10 +79,17 @@ const Button = styled.button`
 
 interface AddLoanModalProps {
   onAdd: (loan: Omit<Loan, 'id'>) => void;
+  onUpdate: (loan: Loan) => void;
+  editingLoan?: Loan | null;
   onClose: () => void;
 }
 
-export const AddLoanModal: React.FC<AddLoanModalProps> = ({ onAdd, onClose }) => {
+export const AddLoanModal: React.FC<AddLoanModalProps> = ({
+  onAdd,
+  onUpdate,
+  editingLoan,
+  onClose
+}) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
@@ -90,16 +97,41 @@ export const AddLoanModal: React.FC<AddLoanModalProps> = ({ onAdd, onClose }) =>
   const [installmentAmount, setInstallmentAmount] = useState('');
   const [startDate, setStartDate] = useState('');
 
+  useEffect(() => {
+    if (editingLoan) {
+      setName(editingLoan.name);
+      setDescription(editingLoan.description || '');
+      setAmount(String(editingLoan.amount));
+      setInstallments(String(editingLoan.installments));
+      setInstallmentAmount(String(editingLoan.installmentAmount));
+      setStartDate(editingLoan.startDate);
+    }
+  }, [editingLoan]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onAdd({
-      name: name.trim(),
-      description: description.trim(),
-      amount: Number(amount),
-      installments: Number(installments),
-      installmentAmount: Number(installmentAmount),
-      startDate: startDate
-    });
+    if (editingLoan) {
+      // Editar
+      onUpdate({
+        ...editingLoan,
+        name,
+        description,
+        amount: Number(amount),
+        installments: Number(installments),
+        installmentAmount: Number(installmentAmount),
+        startDate
+      });
+    } else {
+      // Agregar
+      onAdd({
+        name: name.trim(),
+        description: description.trim(),
+        amount: Number(amount),
+        installments: Number(installments),
+        installmentAmount: Number(installmentAmount),
+        startDate
+      });
+    }
     onClose();
   };
 
@@ -107,7 +139,7 @@ export const AddLoanModal: React.FC<AddLoanModalProps> = ({ onAdd, onClose }) =>
     <Overlay>
       <Modal>
         <form onSubmit={handleSubmit}>
-          <Title>Agregar Nuevo Préstamo</Title>
+          <Title>{editingLoan ? 'Editar Préstamo' : 'Agregar Nuevo Préstamo'}</Title>
 
           <FormGroup>
             <Label>Nombre (opcional):</Label>
@@ -170,7 +202,9 @@ export const AddLoanModal: React.FC<AddLoanModalProps> = ({ onAdd, onClose }) =>
           </FormGroup>
 
           <ButtonGroup>
-            <Button type="submit" className="primary">Agregar</Button>
+            <Button type="submit" className="primary">
+              {editingLoan ? 'Guardar Cambios' : 'Agregar'}
+            </Button>
             <Button type="button" className="secondary" onClick={onClose}>
               Cancelar
             </Button>
