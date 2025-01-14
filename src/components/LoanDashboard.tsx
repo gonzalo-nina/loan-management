@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import styled, { css } from 'styled-components';
 import { Loan } from '../types/types';
+import { getLoanInstallments, updateLoanInstallments, saveLoans } from '../utils/storage';
 
 const DashboardOverlay = styled.div`
   position: fixed;
@@ -9,23 +10,24 @@ const DashboardOverlay = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.8);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  padding: 20px;
 `;
 
 const DashboardContainer = styled.div`
   background: #1a1f2e;
-  padding: 30px;
+  width: 95vw;
+  height: 90vh;
   border-radius: 16px;
-  width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
+  overflow: auto;
   display: grid;
   grid-template-columns: 70% 30%;
   gap: 20px;
+  padding: 30px;
   color: #fff;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 `;
@@ -176,44 +178,47 @@ interface Props {
 
 export const LoanDashboard: React.FC<Props> = ({ loan, onClose, onInstallmentUpdate }) => {
     const [installments, setInstallments] = useState<InstallmentData[]>([]);
+    const [loans, setLoans] = useState<Loan[]>([]);
 
     useEffect(() => {
-        const storedLoans = JSON.parse(localStorage.getItem('loans') || '[]');
-        const currentLoan = storedLoans.find((l: any) => l.id === loan.id);
-        
-        if (currentLoan?.installmentsData) {
-            setInstallments(currentLoan.installmentsData);
-        } else {
-            // Inicializar installments si no hay datos guardados
-            const initialInstallments = Array.from({ length: loan.installments }, (_, index) => ({
-                number: index + 1,
-                dueDate: new Date(new Date(loan.startDate).setMonth(new Date(loan.startDate).getMonth() + index)).toISOString().split('T')[0],
-                amount: loan.installmentAmount,
-                isPaid: false
-            }));
-            setInstallments(initialInstallments);
-        }
-    }, [loan]);
+      const initialInstallments = Array.from({ length: loan.installments }, (_, index) => ({
+          number: index + 1,
+          dueDate: new Date(new Date(loan.startDate).setMonth(new Date(loan.startDate).getMonth() + index)).toISOString().split('T')[0],
+          amount: loan.installmentAmount,
+          isPaid: loan.paidInstallments?.includes(index + 1) || false
+      }));
+      setInstallments(initialInstallments);
+  }, [loan]);
 
     const totalPaid = installments.filter(i => i.isPaid).length * loan.installmentAmount;
     const remainingInstallments = loan.installments - installments.filter(i => i.isPaid).length;
     const remainingTotal = remainingInstallments * loan.installmentAmount;
 
     const handleInstallmentToggle = (index: number) => {
-        const newInstallments = installments.map((inst, i) => 
-            i === index ? { ...inst, isPaid: !inst.isPaid } : inst
-        );
-        setInstallments(newInstallments);
-
-        // Guardar en localStorage
-        const storedLoans = JSON.parse(localStorage.getItem('loans') || '[]');
-        const updatedLoans = storedLoans.map((storedLoan: any) => 
-            storedLoan.id === loan.id 
-                ? { ...storedLoan, installmentsData: newInstallments }
-                : storedLoan
-        );
-        localStorage.setItem('loans', JSON.stringify(updatedLoans));
-    };
+      const newInstallments = installments.map((inst, i) => 
+          i === index ? { ...inst, isPaid: !inst.isPaid } : inst
+      );
+      setInstallments(newInstallments);
+      
+      // Update paidInstallments in loan
+      const paidNumbers = newInstallments
+          .filter(inst => inst.isPaid)
+          .map(inst => inst.number);
+      
+      const updatedLoan = {
+          ...loan,
+          paidInstallments: paidNumbers
+      };
+      
+      // Update in loans array
+      const updatedLoans = loans.map(l => 
+          l.id === loan.id ? updatedLoan : l
+      );
+      
+      setLoans(updatedLoans);
+      saveLoans(updatedLoans);
+      onInstallmentUpdate(loan.id, newInstallments);
+  };
 
     return (
         <DashboardOverlay onClick={onClose}>

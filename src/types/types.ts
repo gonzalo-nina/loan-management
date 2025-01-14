@@ -8,6 +8,7 @@ export interface Loan {
   startDate: string;
   description?: string;
   installmentsData?: InstallmentData[];
+  paidInstallments: number[];
 }
 
 export interface InstallmentData {

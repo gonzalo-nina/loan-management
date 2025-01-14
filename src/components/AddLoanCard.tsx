@@ -8,71 +8,96 @@ const Overlay = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.8);
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1000;
 `;
 
 const Modal = styled.div`
-  background: white;
+  background: #1a1f2e;
   padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  width: 400px;
+  border-radius: 16px;
+  width: 500px;
+  color: white;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 `;
 
 const Title = styled.h2`
-  color: #333;
-  margin-bottom: 20px;
+  color: #64ffda;
+  margin-bottom: 25px;
+  font-size: 1.5rem;
 `;
 
 const FormGroup = styled.div`
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 `;
 
 const Label = styled.label`
   display: block;
-  margin-bottom: 5px;
-  color: #333;
-  font-weight: 500;
+  margin-bottom: 8px;
+  color: #8892b0;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 `;
 
 const Input = styled.input`
   width: 100%;
-  padding: 8px;
-  border: 1px solid #ddd;
+  padding: 10px;
+  background: #2a3245;
+  border: 1px solid rgba(100, 255, 218, 0.2);
   border-radius: 4px;
-  font-size: 14px;
-  color: #fff;
+  color: white;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: #64ffda;
+    box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.1);
+  }
+
+  &::placeholder {
+    color: #4a5568;
+  }
 `;
+
 
 const ButtonGroup = styled.div`
   display: flex;
-  gap: 10px;
-  margin-top: 20px;
+  gap: 15px;
+  margin-top: 30px;
+  justify-content: flex-end;
 `;
 
 const Button = styled.button`
-  padding: 8px 16px;
+  padding: 10px 20px;
   border-radius: 4px;
-  border: none;
-  cursor: pointer;
   font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
 
   &.primary {
-    background: #007bff;
-    color: white;
+    background: transparent;
+    color: #64ffda;
+    border: 1px solid #64ffda;
+
     &:hover {
-      background: #0056b3;
+      background: rgba(100, 255, 218, 0.1);
+      transform: translateY(-2px);
     }
   }
 
   &.secondary {
-    background: #6c757d;
-    color: white;
+    background: transparent;
+    color: #8892b0;
+    border: 1px solid #8892b0;
+
     &:hover {
-      background: #5a6268;
+      background: rgba(136, 146, 176, 0.1);
+      transform: translateY(-2px);
     }
   }
 `;
@@ -124,13 +149,14 @@ export const AddLoanModal: React.FC<AddLoanModalProps> = ({
     } else {
       // Agregar
       onAdd({
-        name: name.trim(),
-        description: description.trim(),
-        amount: Number(amount),
-        installments: Number(installments),
-        installmentAmount: Number(installmentAmount),
-        startDate
-      });
+              name: name.trim(),
+              description: description.trim(),
+              amount: Number(amount),
+              installments: Number(installments),
+              installmentAmount: Number(installmentAmount),
+              startDate,
+              paidInstallments: []
+            });
     }
     onClose();
   };

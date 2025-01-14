@@ -4,21 +4,29 @@ import { Loan } from '../types/types';
 import { LoanDashboard } from './LoanDashboard';
 
 const Card = styled.div`
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
-  margin: 10px;
-  width: 300px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background: linear-gradient(145deg, #2a3245, #1e2432);
+  padding: 25px;
+  border-radius: 12px;
   position: relative;
+  transition: transform 0.2s ease;
+  width: 100%;
+  color: #fff;
+
+  &:hover {
+    transform: translateY(-5px);
+  }
+
+  h3 {
+    color: #64ffda;
+    font-size: 1.5rem;
+    margin: 0 0 15px 0;
+  }
 `;
 
 const ButtonGroup = styled.div`
-  position: absolute;
-  top: 10px;
-  right: 10px;
   display: flex;
-  gap: 5px;
+  gap: 10px;
+  margin-top: 20px;
 `;
 
 const ActionButton = styled.button`
@@ -40,10 +48,31 @@ const ActionButton = styled.button`
 `;
 
 const Description = styled.p`
-  color: #666;
-  font-size: 14px;
+  color: #8892b0;
   margin: 10px 0;
-  font-style: italic;
+  font-size: 0.9rem;
+  line-height: 1.4;
+`;
+
+const Amount = styled.p`
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin: 15px 0;
+  background: linear-gradient(90deg, #64ffda, #34ffe9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+`;
+
+const InfoGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 15px 0;
+  
+  p {
+    color: #8892b0;
+    margin: 5px 0;
+  }
 `;
 
 interface LoanCardProps {
@@ -58,35 +87,40 @@ export const LoanCard: React.FC<LoanCardProps> = ({ loan, onEdit, onDelete }) =>
     return (
         <>
             <Card>
+                <h3>{loan.name}</h3>
+                
+                {loan.description && (
+                    <Description>{loan.description}</Description>
+                )}
+                
+                <Amount>S/. {loan.amount.toFixed(2)}</Amount>
+                
+                <InfoGrid>
+                    <p>Cuotas: {loan.installments}</p>
+                    <p>Cuota mensual: S/. {loan.installmentAmount.toFixed(2)}</p>
+                    <p>Fecha inicio: {new Date(loan.startDate).toLocaleDateString()}</p>
+                </InfoGrid>
+
                 <ButtonGroup>
                     <ActionButton 
                         className="edit"
                         onClick={() => onEdit(loan)}
                     >
-                        Editar
+                        ✏ Editar
                     </ActionButton>
                     <ActionButton 
                         className="delete"
                         onClick={() => onDelete(loan.id)}
                     >
-                        Eliminar
+                        🗑 Eliminar
                     </ActionButton>
                     <ActionButton 
                         className="primary"
                         onClick={() => setShowDashboard(true)}
                     >
-                        Ver Detalles
+                        👁 Ver Detalles
                     </ActionButton>
                 </ButtonGroup>
-
-                <h3>{loan.name}</h3>
-                {loan.description && (
-                    <Description>{loan.description}</Description>
-                )}
-                <p>Monto: ${loan.amount}</p>
-                <p>Cuotas: {loan.installments}</p>
-                <p>Monto por cuota: ${loan.installmentAmount}</p>
-                <p>Fecha de inicio: {new Date(loan.startDate).toLocaleDateString()}</p>
             </Card>
 
             {showDashboard && (
@@ -94,7 +128,7 @@ export const LoanCard: React.FC<LoanCardProps> = ({ loan, onEdit, onDelete }) =>
                     loan={loan}
                     onClose={() => setShowDashboard(false)}
                     onInstallmentUpdate={(loanId, installments) => {
-                        // Aquí deberías implementar la lógica para actualizar las cuotas
+                        // Implementar lógica de actualización
                         console.log('Actualizando cuotas:', loanId, installments);
                     }}
                 />

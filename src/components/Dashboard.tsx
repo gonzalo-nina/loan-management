@@ -1,37 +1,109 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
+import { createGlobalStyle } from 'styled-components';
 import { LoanCard } from './LoanCard';
 import { AddLoanModal } from './AddLoanCard';
 import { v4 as uuidv4 } from 'uuid';
 import { Loan } from '../types/types';
 import { saveLoans, loadLoans } from '../utils/storage';
 import { InstallmentData } from '../types/types'; // Add this line to import InstallmentData
+import { LoanDashboard } from './LoanDashboard';
 
-const Container = styled.div`
-  padding: 20px;
+const GlobalStyle = createGlobalStyle`
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: #1a1f2e;
+    overflow-x: hidden;
+  }
 `;
 
-const CardsContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
+const DashboardWrapper = styled.div`
+  width: 100%;
+  min-height: 100vh;
+  background: #1a1f2e;
 `;
 
-const FileControls = styled.div`
-  margin: 20px 0;
+const DashboardContainer = styled.div`
+  width: 100%;
+  padding: 2rem;
+`;
+
+const Header = styled.header`
   display: flex;
-  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  
+  h1 {
+    color: #64ffda;
+    font-size: 2rem;
+  }
+`;
+
+const ActionButtons = styled.div`
+  display: flex;
+  gap: 15px;
 `;
 
 const Button = styled.button`
-  padding: 8px 16px;
-  background: #007bff;
-  color: white;
-  border: none;
+  background: transparent;
+  color: #64ffda;
+  border: 1px solid #64ffda;
+  padding: 10px 20px;
   border-radius: 4px;
   cursor: pointer;
+  transition: all 0.2s ease;
+  
   &:hover {
-    background: #0056b3;
+    background: rgba(100, 255, 218, 0.1);
+    transform: translateY(-2px);
+  }
+`;
+
+const LoansGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+  width: 100%;
+`;
+
+const StyledLoanCard = styled.div`
+  background: linear-gradient(145deg, #2a3245, #1e2432);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+  }
+
+  h3 {
+    color: #64ffda;
+    margin: 0 0 15px 0;
+  }
+
+  .amount {
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin: 10px 0;
+    background: linear-gradient(90deg, #64ffda, #34ffe9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .details {
+    margin: 15px 0;
+    color: #8892b0;
   }
 `;
 
@@ -39,6 +111,8 @@ export const Dashboard: React.FC = () => {
     const [loans, setLoans] = useState<Loan[]>([]);
     const [showModal, setShowModal] = useState(false);
     const [loanToEdit, setLoanToEdit] = useState<Loan | null>(null);
+    const [showLoanDashboard, setShowLoanDashboard] = useState(false);
+    const [selectedLoan, setSelectedLoan] = useState<Loan | null>(null);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -46,36 +120,52 @@ export const Dashboard: React.FC = () => {
         const savedLoans = loadLoans();
         setLoans(savedLoans);
     }, []);
-    
+
 
     const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const content = e.target?.result as string;
-                    const parsedLoans = JSON.parse(content);
-                    setLoans(parsedLoans);
-                    saveLoans(parsedLoans);
-                } catch (error) {
-                    alert('Error al leer el archivo');
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const importedLoans = JSON.parse(e.target?.result as string);
+                if (Array.isArray(importedLoans)) {
+                    const validatedLoans = importedLoans.map(loan => ({
+                        ...loan,
+                        paidInstallments: Array.isArray(loan.paidInstallments) ? loan.paidInstallments : []
+                    }));
+                    setLoans(validatedLoans);
+                    saveLoans(validatedLoans);
+                    alert('Datos importados correctamente');
                 }
-            };
-            reader.readAsText(file);
-        }
+            } catch (error) {
+                alert('Error al importar los datos.');
+            }
+        };
+        reader.readAsText(file);
+        event.target.value = '';
     };
 
     const handleDownload = () => {
-        const data = JSON.stringify(loans, null, 2);
-        const blob = new Blob([data], { type: 'text/plain' });
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', 'prestamos.txt');
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
+        const dataToExport = loans.map(loan => ({
+            ...loan,
+            paidInstallments: loan.installmentsData 
+                ? loan.installmentsData
+                    .map((inst, index) => inst.isPaid ? index + 1 : null)
+                    .filter(num => num !== null)
+                : []
+        }));
+
+        const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `loans_backup_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
     };
 
     const generateRandomCode = () => {
@@ -88,7 +178,7 @@ export const Dashboard: React.FC = () => {
             id: uuidv4(),
             name: newLoan.name || `Prestamo ${generateRandomCode()}`
         };
-        
+
         const updatedLoans = [...loans, loanWithId];
         setLoans(updatedLoans);
         saveLoans(updatedLoans);
@@ -112,60 +202,102 @@ export const Dashboard: React.FC = () => {
     };
 
     const handleInstallmentUpdate = (loanId: string, installmentsData: InstallmentData[]) => {
-        const updatedLoans = loans.map(loan => 
-          loan.id === loanId 
-            ? { ...loan, installmentsData } 
-            : loan
+        const updatedLoans = loans.map(loan =>
+            loan.id === loanId
+                ? { ...loan, installmentsData }
+                : loan
         );
         setLoans(updatedLoans);
         saveLoans(updatedLoans);
     };
 
+    const handleViewDetails = (loan: Loan) => {
+        setSelectedLoan(loan);
+        setShowLoanDashboard(true);
+    };
+
     return (
-        <Container>
-            <h1>Cronograma de Pagos</h1>
-            
-            <FileControls>
-                <input
-                    type="file"
-                    ref={fileInputRef}
-                    accept=".txt"
-                    onChange={handleFileUpload}
-                    style={{ display: 'none' }}
-                />
-                <Button onClick={() => fileInputRef.current?.click()}>
-                    Cargar Datos
-                </Button>
-                <Button onClick={handleDownload}>
-                    Descargar Datos
-                </Button>
-                <Button onClick={() => setShowModal(true)}>
-                    Agregar Préstamo
-                </Button>
-            </FileControls>
+        <>
+            <GlobalStyle />
+            <DashboardWrapper>
+                <DashboardContainer>
+                    <Header>
+                        <h1>Gestión de Préstamos</h1>
+                        <ActionButtons>
+                            <Button onClick={() => setShowModal(true)}>
+                                + Nuevo Préstamo
+                            </Button>
+                            <Button onClick={handleDownload}>
+                                ⬆ Exportar Datos
+                            </Button>
+                            <Button onClick={() => fileInputRef.current?.click()}>
+                            ⬇ Cargar Datos
+                            </Button>
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                style={{ display: 'none' }}
+                                onChange={handleFileUpload}
+                                accept=".txt,.json"
+                            />
+                        </ActionButtons>
+                    </Header>
 
-            <CardsContainer>
-                {loans.map(loan => (
-                    <LoanCard 
-                        key={loan.id} 
-                        loan={loan}
-                        onEdit={handleEditLoan}
-                        onDelete={handleDeleteLoan}
-                    />
-                ))}
-            </CardsContainer>
+                    <LoansGrid>
+                        {loans.map((loan) => (
+                            <StyledLoanCard key={loan.id}>
+                                <h3>{loan.name}</h3>
+                                <div className="amount">
+                                    S/. {loan.amount.toFixed(2)}
+                                </div>
+                                <div className="details">
+                                    <p>Cuotas: {loan.installments}</p>
+                                    <p>Cuota Mensual: S/. {loan.installmentAmount.toFixed(2)}</p>
+                                </div>
+                                <ActionButtons>
+                                    <Button onClick={() => handleEditLoan(loan)}>
+                                        ✏ Editar
+                                    </Button>
+                                    <Button onClick={() => handleDeleteLoan(loan.id)}>
+                                        🗑 Eliminar
+                                    </Button>
+                                    <Button onClick={() => handleViewDetails(loan)}>
+                                        👁 Detalles
+                                    </Button>
+                                </ActionButtons>
+                            </StyledLoanCard>
+                        ))}
+                    </LoansGrid>
 
-            {showModal && (
-                <AddLoanModal
-                    onAdd={handleAddLoan}
-                    onUpdate={handleUpdateLoan}
-                    editingLoan={loanToEdit}
-                    onClose={() => {
-                        setShowModal(false);
-                        setLoanToEdit(null);
-                    }}
-                />
-            )}
-        </Container>
+                    {showModal && (
+                        <AddLoanModal
+                            onAdd={handleAddLoan}
+                            onUpdate={handleUpdateLoan}
+                            editingLoan={loanToEdit}
+                            onClose={() => {
+                                setShowModal(false);
+                                setLoanToEdit(null);
+                            }}
+                        />
+                    )}
+
+                    {showLoanDashboard && selectedLoan && (
+                        <LoanDashboard
+                            loan={selectedLoan}
+                            onClose={() => setShowLoanDashboard(false)}
+                            onInstallmentUpdate={(loanId, installments) => {
+                                const updatedLoans = loans.map(loan => 
+                                    loan.id === loanId 
+                                        ? { ...loan, installmentsData: installments }
+                                        : loan
+                                );
+                                setLoans(updatedLoans);
+                                saveLoans(updatedLoans);
+                            }}
+                        />
+                    )}
+                </DashboardContainer>
+            </DashboardWrapper>
+        </>
     );
 };
