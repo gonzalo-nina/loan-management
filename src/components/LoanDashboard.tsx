@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import styled, { css } from 'styled-components';
 import { Loan } from '../types/types';
-import { getLoanInstallments, updateLoanInstallments, saveLoans } from '../utils/storage';
+import { getLoanInstallments, updateLoanInstallments, saveLoans, loadLoans } from '../utils/storage';
 
 const DashboardOverlay = styled.div`
   position: fixed;
@@ -178,16 +178,26 @@ interface Props {
 
 export const LoanDashboard: React.FC<Props> = ({ loan, onClose, onInstallmentUpdate }) => {
     const [installments, setInstallments] = useState<InstallmentData[]>([]);
-    const [loans, setLoans] = useState<Loan[]>([]);
 
     useEffect(() => {
-      const initialInstallments = Array.from({ length: loan.installments }, (_, index) => ({
-          number: index + 1,
-          dueDate: new Date(new Date(loan.startDate).setMonth(new Date(loan.startDate).getMonth() + index)).toISOString().split('T')[0],
-          amount: loan.installmentAmount,
-          isPaid: loan.paidInstallments?.includes(index + 1) || false
-      }));
-      setInstallments(initialInstallments);
+      // First try to get saved installments
+      const savedInstallments = getLoanInstallments(loan.id);
+      
+      if (savedInstallments) {
+          // Use saved installments if they exist
+          setInstallments(savedInstallments);
+      } else {
+          // Initialize new installments with paid status from loan.paidInstallments
+          const initialInstallments = Array.from({ length: loan.installments }, (_, index) => ({
+              number: index + 1,
+              dueDate: new Date(new Date(loan.startDate).setMonth(new Date(loan.startDate).getMonth() + index)).toISOString().split('T')[0],
+              amount: loan.installmentAmount,
+              isPaid: loan.paidInstallments?.includes(index + 1) || false
+          }));
+          setInstallments(initialInstallments);
+          // Save initial installments
+          updateLoanInstallments(loan.id, initialInstallments);
+      }
   }, [loan]);
 
     const totalPaid = installments.filter(i => i.isPaid).length * loan.installmentAmount;
@@ -200,24 +210,24 @@ export const LoanDashboard: React.FC<Props> = ({ loan, onClose, onInstallmentUpd
       );
       setInstallments(newInstallments);
       
+      // Update in storage
+      updateLoanInstallments(loan.id, newInstallments);
+      
+      // Update parent component
+      onInstallmentUpdate(loan.id, newInstallments);
+      
       // Update paidInstallments in loan
       const paidNumbers = newInstallments
           .filter(inst => inst.isPaid)
           .map(inst => inst.number);
-      
-      const updatedLoan = {
-          ...loan,
-          paidInstallments: paidNumbers
-      };
-      
-      // Update in loans array
-      const updatedLoans = loans.map(l => 
-          l.id === loan.id ? updatedLoan : l
+          
+      const updatedLoans = loadLoans().map(l => 
+          l.id === loan.id 
+              ? { ...l, paidInstallments: paidNumbers }
+              : l
       );
       
-      setLoans(updatedLoans);
       saveLoans(updatedLoans);
-      onInstallmentUpdate(loan.id, newInstallments);
   };
 
     return (
