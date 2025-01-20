@@ -163,6 +163,22 @@ const StatCard = styled.div`
   }
 `;
 
+const BackButton = styled.button`
+  background: transparent;
+  color: #64ffda;
+  border: 1px solid #64ffda;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 15px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(100, 255, 218, 0.1);
+    transform: translateY(-2px);
+  }
+`;
+
 interface InstallmentData {
     number: number;
     dueDate: string;
@@ -234,6 +250,7 @@ export const LoanDashboard: React.FC<Props> = ({ loan, onClose, onInstallmentUpd
         <DashboardOverlay onClick={onClose}>
             <DashboardContainer onClick={e => e.stopPropagation()}>
                 <MainSection>
+                    <BackButton onClick={onClose}>← Volver</BackButton>
                     <h2>Detalles del Préstamo: {loan.name}</h2>
                     <SummarySection>
                         <SummaryCard>
