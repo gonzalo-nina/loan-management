@@ -173,6 +173,12 @@ const StatCard = styled.div`
   }
 `;
 
+// Add this new styled component
+const StaticStatCard = styled(StatCard)`
+  background: linear-gradient(145deg, #2a3245, #1e2432);
+  border: 1px solid rgba(100, 255, 218, 0.1);
+`;
+
 const BackButton = styled.button`
   background: transparent;
   color: #64ffda;
@@ -229,6 +235,9 @@ export const LoanDashboard: React.FC<Props> = ({ loan, onClose, onInstallmentUpd
     const totalPaid = installments.filter(i => i.isPaid).length * loan.installmentAmount;
     const remainingInstallments = loan.installments - installments.filter(i => i.isPaid).length;
     const remainingTotal = remainingInstallments * loan.installmentAmount;
+
+    // In the component, add this calculation near other calculations
+    const totalToReceive = loan.installmentAmount * loan.installments;
 
     const handleInstallmentToggle = (index: number) => {
       const newInstallments = installments.map((inst, i) => 
@@ -309,6 +318,7 @@ export const LoanDashboard: React.FC<Props> = ({ loan, onClose, onInstallmentUpd
                 </MainSection>
 
                 <SideSection>
+                    <h3 style={{ color: '#64ffda', marginBottom: '20px' }}>Información Dinámica</h3>
                     <StatCard>
                         <h4>Progreso de Pago</h4>
                         <p>{Math.round((totalPaid / loan.amount) * 100)}%</p>
@@ -317,14 +327,24 @@ export const LoanDashboard: React.FC<Props> = ({ loan, onClose, onInstallmentUpd
                         <h4>Total Pagado</h4>
                         <p>S/. {totalPaid.toFixed(2)}</p>
                     </StatCard>
-                    <StatCard>
+
+                    <h3 style={{ color: '#64ffda', margin: '30px 0 20px' }}>Información del Préstamo</h3>
+                    <StaticStatCard>
+                        <h4>Total a Recibir</h4>
+                        <p>S/. {totalToReceive.toFixed(2)}</p>
+                    </StaticStatCard>
+                    <StaticStatCard>
                         <h4>Cuota Mensual</h4>
                         <p>S/. {loan.installmentAmount.toFixed(2)}</p>
-                    </StatCard>
-                    <StatCard>
-                        <h4>Monto Total</h4>
+                    </StaticStatCard>
+                    <StaticStatCard>
+                        <h4>Monto Prestado</h4>
                         <p>S/. {loan.amount.toFixed(2)}</p>
-                    </StatCard>
+                    </StaticStatCard>
+                    <StaticStatCard>
+                        <h4>Ganancia Total</h4>
+                        <p>S/. {(totalToReceive - loan.amount).toFixed(2)}</p>
+                    </StaticStatCard>
                 </SideSection>
             </DashboardContainer>
         </DashboardOverlay>
