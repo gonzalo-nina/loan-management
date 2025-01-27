@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Loan } from '../types/types';
+import { device } from '../utils/breakpoints';
 
 const Overlay = styled.div`
   position: fixed;
@@ -17,11 +18,17 @@ const Overlay = styled.div`
 
 const Modal = styled.div`
   background: #ffffff;
-  padding: 2rem;
+  padding: 1rem;
   border-radius: 12px;
-  width: 500px;
-  color: #2d3748;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 500px;
+  margin: 1rem;
+  
+  ${device.tablet} {
+    padding: 2rem;
+    width: 500px;
+    margin: 0;
+  }
 `;
 
 const Title = styled.h2`
@@ -49,8 +56,12 @@ const Input = styled.input`
   border: 1px solid #e2e8f0;
   border-radius: 6px;
   color: #2d3748;
-  font-size: 1rem;
+  font-size: 16px; // Para móviles
   transition: all 0.2s ease;
+
+  ${device.tablet} {
+    font-size: 1rem;
+  }
 
   &:focus {
     outline: none;
@@ -65,9 +76,16 @@ const Input = styled.input`
 
 const ButtonGroup = styled.div`
   display: flex;
-  gap: 15px;
-  margin-top: 30px;
-  justify-content: flex-end;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+
+  ${device.tablet} {
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 30px;
+  }
 `;
 
 const Button = styled.button`

@@ -8,6 +8,7 @@ import { Loan } from '../types/types';
 import { saveLoans, loadLoans } from '../utils/storage';
 import { InstallmentData } from '../types/types'; // Add this line to import InstallmentData
 import { LoanDashboard } from './LoanDashboard';
+import { device } from '../utils/breakpoints';
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -48,6 +49,13 @@ const Header = styled.header`
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  flex-direction: column;
+  padding: 1rem;
+  
+  ${device.tablet} {
+    flex-direction: row;
+    padding: 1.5rem;
+  }
   
   h1 {
     color: #2d3748;
@@ -84,6 +92,15 @@ const LoansGrid = styled.div`
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 2rem;
   width: 100%;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  
+  ${device.tablet} {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 2rem;
+  }
 `;
 
 const StyledLoanCard = styled.div`

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import styled, { css } from 'styled-components';
 import { Loan } from '../types/types';
 import { getLoanInstallments, updateLoanInstallments, saveLoans, loadLoans } from '../utils/storage';
+import { device } from '../utils/breakpoints';
 
 // Add this helper function at the top of the file, before the styled components
 const formatDate = (dateString: string): string => {
@@ -35,11 +36,16 @@ const DashboardContainer = styled.div`
   border-radius: 16px;
   overflow: auto;
   display: grid;
-  grid-template-columns: 70% 30%;
+  grid-template-columns: 1fr;
   gap: 20px;
-  padding: 30px;
+  padding: 15px;
   color: #2d3748;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+  ${device.tablet} {
+    grid-template-columns: 70% 30%;
+    padding: 30px;
+  }
 `;
 
 const MainSection = styled.div`
@@ -94,7 +100,14 @@ const Table = styled.table`
   border-collapse: separate;
   border-spacing: 0;
   margin-top: 20px;
-  font-size: 0.9rem;
+  overflow-x: auto;
+  display: block;
+  font-size: 14px;
+
+  ${device.tablet} {
+    display: table;
+    font-size: 0.9rem;
+  }
   
   th, td {
     padding: 12px;
