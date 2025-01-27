@@ -4,6 +4,16 @@ import styled, { css } from 'styled-components';
 import { Loan } from '../types/types';
 import { getLoanInstallments, updateLoanInstallments, saveLoans, loadLoans } from '../utils/storage';
 
+// Add this helper function at the top of the file, before the styled components
+const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    }).replace(/\//g, ' / ');
+};
+
 const DashboardOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -276,7 +286,7 @@ export const LoanDashboard: React.FC<Props> = ({ loan, onClose, onInstallmentUpd
                             {installments.map((installment, index) => (
                                 <tr key={index}>
                                     <td>{installment.number}</td>
-                                    <td>{installment.dueDate}</td>
+                                    <td>{formatDate(installment.dueDate)}</td>
                                     <td>S/. {installment.amount.toFixed(2)}</td>
                                     <td style={{
                                         color: installment.isPaid ? '#27ae60' : '#e74c3c',
