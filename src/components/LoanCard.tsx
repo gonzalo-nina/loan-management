@@ -4,46 +4,104 @@ import { Loan } from '../types/types';
 import { LoanDashboard } from './LoanDashboard';
 
 const Card = styled.div`
-  background: linear-gradient(145deg, #2a3245, #1e2432);
-  padding: 25px;
+  background: linear-gradient(145deg, #ffffff, #f8fafc);
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
-  position: relative;
-  transition: transform 0.2s ease;
-  width: 100%;
-  color: #fff;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
 
   &:hover {
-    transform: translateY(-5px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
+`;
 
-  h3 {
-    color: #64ffda;
-    font-size: 1.5rem;
-    margin: 0 0 15px 0;
+const Title = styled.h3`
+  color: #2d3748;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+`;
+
+const InfoGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  p {
+    color: #4a5568;
+    font-size: 1rem;
+    margin: 0.3rem 0;
+
+    strong {
+      color: #3182ce;
+    }
   }
 `;
 
 const ButtonGroup = styled.div`
   display: flex;
-  gap: 10px;
-  margin-top: 20px;
+  gap: 1rem;
+  flex-wrap: wrap;
 `;
 
 const ActionButton = styled.button`
-  padding: 5px 10px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  
+  &.primary {
+    background: #ebf8ff;
+    color: #3182ce;
+    border: 1px solid #90cdf4;
+    
+    &:hover {
+      background: #bee3f8;
+      transform: translateY(-1px);
+    }
+  }
+  
   &.edit {
-    background: #ffc107;
-    color: #000;
+    background: #e6fffa;
+    color: #38b2ac;
+    border: 1px solid #81e6d9;
+    
+    &:hover {
+      background: #b2f5ea;
+      transform: translateY(-1px);
+    }
+  }
+  
+  &.delete {
+    background: #fff5f5;
+    color: #e53e3e;
+    border: 1px solid #feb2b2;
+    
+    &:hover {
+      background: #fed7d7;
+      transform: translateY(-1px);
+    }
   }
 
-  &.delete {
-    background: #dc3545;
-    color: #fff;
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
+const ProgressBar = styled.div`
+  background: #edf2f7;
+  border-radius: 9999px;
+  height: 8px;
+  margin: 1rem 0;
+  overflow: hidden;
+
+  div {
+    background: linear-gradient(90deg, #4299e1, #63b3ed);
+    height: 100%;
+    transition: width 0.3s ease;
   }
 `;
 
@@ -63,18 +121,6 @@ const Amount = styled.p`
   -webkit-text-fill-color: transparent;
 `;
 
-const InfoGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  margin: 15px 0;
-  
-  p {
-    color: #8892b0;
-    margin: 5px 0;
-  }
-`;
-
 interface LoanCardProps {
     loan: Loan;
     onEdit: (loan: Loan) => void;
@@ -87,7 +133,7 @@ export const LoanCard: React.FC<LoanCardProps> = ({ loan, onEdit, onDelete }) =>
     return (
         <>
             <Card>
-                <h3>{loan.name}</h3>
+                <Title>{loan.name}</Title>
                 
                 {loan.description && (
                     <Description>{loan.description}</Description>

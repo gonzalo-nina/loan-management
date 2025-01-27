@@ -15,12 +15,12 @@ const formatDate = (dateString: string): string => {
 };
 
 const DashboardOverlay = styled.div`
+  background: rgba(0, 0, 0, 0.5);
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -29,7 +29,7 @@ const DashboardOverlay = styled.div`
 `;
 
 const DashboardContainer = styled.div`
-  background: #1a1f2e;
+  background: #f5f7fa;
   width: 95vw;
   height: 90vh;
   border-radius: 16px;
@@ -38,8 +38,8 @@ const DashboardContainer = styled.div`
   grid-template-columns: 70% 30%;
   gap: 20px;
   padding: 30px;
-  color: #fff;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  color: #2d3748;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 `;
 
 const MainSection = styled.div`
@@ -47,10 +47,11 @@ const MainSection = styled.div`
 `;
 
 const SideSection = styled.div`
-  background: rgba(255, 255, 255, 0.05);
+  background: #ffffff;
   padding: 20px;
   border-radius: 12px;
   height: fit-content;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 `;
 
 const SummarySection = styled.div`
@@ -61,33 +62,30 @@ const SummarySection = styled.div`
 `;
 
 const SummaryCard = styled.div`
-  background: linear-gradient(145deg, #2a3245, #1e2432);
-  padding: 20px;
+  background: linear-gradient(145deg, #ebf8ff, #ffffff);
+  border: 1px solid #bee3f8;
   border-radius: 12px;
-  text-align: left;
-  color: white;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
+  padding: 1.5rem;
+  margin: 0.5rem;
+  flex: 1;
+  min-width: 200px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
 
   &:hover {
-    transform: translateY(-3px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 
   h3 {
-    margin: 0 0 10px 0;
-    font-size: 0.9rem;
-    color: #64ffda;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    color: #2c5282;
+    margin-bottom: 0.5rem;
   }
 
   p {
-    font-size: 1.6rem;
-    margin: 0;
-    font-weight: 600;
-    background: linear-gradient(90deg, #64ffda, #34ffe9);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #3182ce;
+    font-size: 1.8rem;
+    font-weight: bold;
   }
 `;
 
@@ -105,8 +103,8 @@ const Table = styled.table`
   }
   
   th {
-    background: rgba(100, 255, 218, 0.1);
-    color: #64ffda;
+    background: #e6f0ff;
+    color: #4a5568;
     font-weight: 500;
     font-size: 0.8rem;
     text-transform: uppercase;
@@ -114,11 +112,11 @@ const Table = styled.table`
   }
 
   td {
-    color: #fff;
+    color: #2d3748;
   }
 
   tr:hover td {
-    background: rgba(255, 255, 255, 0.05);
+    background: #f8fafc;
   }
 
   th:nth-child(1), td:nth-child(1) { width: 8%; }
@@ -126,63 +124,79 @@ const Table = styled.table`
   th:nth-child(3), td:nth-child(3) { width: 15%; }
   th:nth-child(4), td:nth-child(4) { width: 15%; }
   th:nth-child(5), td:nth-child(5) { width: 20%; }
+
+  tbody tr:nth-child(even) {
+    background: #f8fafc;
+  }
 `;
 
 interface ActionButtonProps {
     isPaid?: boolean;
 }
 
-const ActionButton = styled.button<ActionButtonProps>`
-  background: transparent;
-  color: #64ffda;
-  border: 1px solid #64ffda;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
+const ActionButton = styled.button<{ isPaid: boolean }>`
+  background: ${props => props.isPaid ? '#ebfaf0' : '#ebf8ff'};
+  color: ${props => props.isPaid ? '#38a169' : '#3182ce'};
+  border: 1px solid ${props => props.isPaid ? '#9ae6b4' : '#90cdf4'};
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
   transition: all 0.2s ease;
-  font-size: 0.8rem;
-  
+  font-weight: 500;
+
   &:hover {
-    background: rgba(100, 255, 218, 0.1);
+    background: ${props => props.isPaid ? '#c6f6d5' : '#bee3f8'};
     transform: translateY(-1px);
   }
 
-  ${props => props.isPaid && `
-    background: rgba(100, 255, 218, 0.1);
-    border-color: #64ffda;
-  `}
+  &:active {
+    transform: translateY(0);
+  }
 `;
 
 const StatCard = styled.div`
-  margin-bottom: 20px;
-  padding: 15px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.05);
+  background: linear-gradient(145deg, #ffffff, #f0f7ff);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.2rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
 
   h4 {
-    color: #64ffda;
-    margin: 0 0 10px 0;
-    font-size: 0.8rem;
-    text-transform: uppercase;
+    color: #4a5568;
+    margin-bottom: 0.5rem;
   }
 
   p {
-    margin: 0;
-    font-size: 1.2rem;
-    color: white;
+    color: #3182ce;
+    font-size: 1.5rem;
+    font-weight: bold;
   }
 `;
 
 // Add this new styled component
 const StaticStatCard = styled(StatCard)`
-  background: linear-gradient(145deg, #2a3245, #1e2432);
-  border: 1px solid rgba(100, 255, 218, 0.1);
+  background: linear-gradient(145deg, #ffffff, #f0ffff);
+  border: 1px solid #bee3f8;
+  
+  p {
+    color: #2c5282;
+  }
+
+  &:hover {
+    background: linear-gradient(145deg, #ffffff, #e6fffa);
+  }
 `;
 
 const BackButton = styled.button`
-  background: transparent;
-  color: #64ffda;
-  border: 1px solid #64ffda;
+  background: #e6fffa;
+  color: #38b2ac;
+  border: 1px solid #38b2ac;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
@@ -190,7 +204,7 @@ const BackButton = styled.button`
   transition: all 0.2s ease;
 
   &:hover {
-    background: rgba(100, 255, 218, 0.1);
+    background: #b2f5ea;
     transform: translateY(-2px);
   }
 `;
@@ -270,7 +284,7 @@ export const LoanDashboard: React.FC<Props> = ({ loan, onClose, onInstallmentUpd
             <DashboardContainer onClick={e => e.stopPropagation()}>
                 <MainSection>
                     <BackButton onClick={onClose}>← Volver</BackButton>
-                    <h2>Detalles del Préstamo: {loan.name}</h2>
+                    <h2 style={{marginBottom: '15px' }} >Detalles del Préstamo: {loan.name}</h2>
                     <SummarySection>
                         <SummaryCard>
                             <h3>Cuotas Restantes</h3>
@@ -298,7 +312,7 @@ export const LoanDashboard: React.FC<Props> = ({ loan, onClose, onInstallmentUpd
                                     <td>{formatDate(installment.dueDate)}</td>
                                     <td>S/. {installment.amount.toFixed(2)}</td>
                                     <td style={{
-                                        color: installment.isPaid ? '#27ae60' : '#e74c3c',
+                                        color: installment.isPaid ? '#38a169' : '#e53e3e',
                                         fontWeight: 'bold'
                                     }}>
                                         {installment.isPaid ? 'Pagada' : 'Pendiente'}
@@ -318,7 +332,7 @@ export const LoanDashboard: React.FC<Props> = ({ loan, onClose, onInstallmentUpd
                 </MainSection>
 
                 <SideSection>
-                    <h3 style={{ color: '#64ffda', marginBottom: '20px' }}>Información Dinámica</h3>
+                    <h3 style={{ color: '#4a5568', marginBottom: '20px' }}>Información Dinámica</h3>
                     <StatCard>
                         <h4>Progreso de Pago</h4>
                         <p>{Math.round((totalPaid / loan.amount) * 100)}%</p>
@@ -328,7 +342,7 @@ export const LoanDashboard: React.FC<Props> = ({ loan, onClose, onInstallmentUpd
                         <p>S/. {totalPaid.toFixed(2)}</p>
                     </StatCard>
 
-                    <h3 style={{ color: '#64ffda', margin: '30px 0 20px' }}>Información del Préstamo</h3>
+                    <h3 style={{ color: '#4a5568', margin: '30px 0 20px' }}>Información del Préstamo</h3>
                     <StaticStatCard>
                         <h4>Total a Recibir</h4>
                         <p>S/. {totalToReceive.toFixed(2)}</p>

@@ -21,7 +21,7 @@ const GlobalStyle = createGlobalStyle`
     height: 100%;
     margin: 0;
     padding: 0;
-    background: #1a1f2e;
+    background: #f5f7fa;
     overflow-x: hidden;
   }
 `;
@@ -29,11 +29,13 @@ const GlobalStyle = createGlobalStyle`
 const DashboardWrapper = styled.div`
   width: 100%;
   min-height: 100vh;
-  background: #1a1f2e;
+  background: #f5f7fa;
 `;
 
 const DashboardContainer = styled.div`
   width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
   padding: 2rem;
 `;
 
@@ -42,9 +44,13 @@ const Header = styled.header`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   
   h1 {
-    color: #64ffda;
+    color: #2d3748;
     font-size: 2rem;
   }
 `;
@@ -55,17 +61,21 @@ const ActionButtons = styled.div`
 `;
 
 const Button = styled.button`
-  background: transparent;
-  color: #64ffda;
-  border: 1px solid #64ffda;
-  padding: 10px 20px;
-  border-radius: 4px;
-  cursor: pointer;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-weight: 500;
   transition: all 0.2s ease;
+  background: #ebf8ff;
+  color: #3182ce;
+  border: 1px solid #90cdf4;
   
   &:hover {
-    background: rgba(100, 255, 218, 0.1);
-    transform: translateY(-2px);
+    background: #bee3f8;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 `;
 
@@ -77,18 +87,20 @@ const LoansGrid = styled.div`
 `;
 
 const StyledLoanCard = styled.div`
-  background: linear-gradient(145deg, #2a3245, #1e2432);
+  background: linear-gradient(145deg, #ffffff, #f8fafc);
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s ease;
 
   &:hover {
-    transform: translateY(-5px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 
   h3 {
-    color: #64ffda;
+    color: #2d3748;
     margin: 0 0 15px 0;
   }
 
@@ -96,14 +108,21 @@ const StyledLoanCard = styled.div`
     font-size: 1.4rem;
     font-weight: bold;
     margin: 10px 0;
-    background: linear-gradient(90deg, #64ffda, #34ffe9);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #3182ce;
   }
 
   .details {
     margin: 15px 0;
-    color: #8892b0;
+    color: #4a5568;
+  }
+
+  ${ActionButtons} {
+    margin-top: 1rem;
+    
+    ${Button} {
+      font-size: 0.9rem;
+      padding: 0.5rem 1rem;
+    }
   }
 `;
 

@@ -8,7 +8,7 @@ const Overlay = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -16,16 +16,16 @@ const Overlay = styled.div`
 `;
 
 const Modal = styled.div`
-  background: #1a1f2e;
-  padding: 30px;
-  border-radius: 16px;
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
   width: 500px;
-  color: white;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  color: #2d3748;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 `;
 
 const Title = styled.h2`
-  color: #64ffda;
+  color: #2c5282;
   margin-bottom: 25px;
   font-size: 1.5rem;
 `;
@@ -37,33 +37,31 @@ const FormGroup = styled.div`
 const Label = styled.label`
   display: block;
   margin-bottom: 8px;
-  color: #8892b0;
+  color: #4a5568;
   font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  font-weight: 500;
 `;
 
 const Input = styled.input`
   width: 100%;
   padding: 10px;
-  background: #2a3245;
-  border: 1px solid rgba(100, 255, 218, 0.2);
-  border-radius: 4px;
-  color: white;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  color: #2d3748;
   font-size: 1rem;
   transition: all 0.2s ease;
 
   &:focus {
     outline: none;
-    border-color: #64ffda;
-    box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.1);
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
   }
 
   &::placeholder {
-    color: #4a5568;
+    color: #a0aec0;
   }
 `;
-
 
 const ButtonGroup = styled.div`
   display: flex;
@@ -74,31 +72,34 @@ const ButtonGroup = styled.div`
 
 const Button = styled.button`
   padding: 10px 20px;
-  border-radius: 4px;
+  border-radius: 6px;
   font-weight: 500;
-  cursor: pointer;
   transition: all 0.2s ease;
 
   &.primary {
-    background: transparent;
-    color: #64ffda;
-    border: 1px solid #64ffda;
+    background: #ebf8ff;
+    color: #3182ce;
+    border: 1px solid #90cdf4;
 
     &:hover {
-      background: rgba(100, 255, 218, 0.1);
-      transform: translateY(-2px);
+      background: #bee3f8;
+      transform: translateY(-1px);
     }
   }
 
   &.secondary {
-    background: transparent;
-    color: #8892b0;
-    border: 1px solid #8892b0;
+    background: #f7fafc;
+    color: #4a5568;
+    border: 1px solid #e2e8f0;
 
     &:hover {
-      background: rgba(136, 146, 176, 0.1);
-      transform: translateY(-2px);
+      background: #edf2f7;
+      transform: translateY(-1px);
     }
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 `;
 
